@@ -1,10 +1,13 @@
 # ------------------------------------------------------------------------------
-# Demo code.
+# Demo code. Generated panoptic segmentation for NuScenes Dataset
 # Example command:
-# python tools/demo.py --cfg PATH_TO_CONFIG_FILE \
+# python tools/demo.py \
+#   --cfg PATH_TO_CONFIG_FILE \
+#   --model-file PATH_TO_PRETRAINED_MODEL_FILE \
 #   --input-files PATH_TO_INPUT_FILES \
-#   --output-dir PATH_TO_OUTPUT_DIR
-# Written by Bowen Cheng (bcheng9@illinois.edu)
+#   --output-dir PATH_TO_OUTPUT_DIR \
+#   --camera-id CAMERA_ID_NUSCENES
+# Written by Yuliang Guo (33yuliangguo@gmail.com)
 # ------------------------------------------------------------------------------
 
 import argparse
@@ -41,6 +44,10 @@ def parse_args():
                         help='experiment configure file name',
                         default='configs/panoptic_deeplab_R101_os32_cityscapes.yaml',
                         type=str)
+    parser.add_argument('--model-file',
+                        help='the pretrained model file to load',
+                        default='zoo_models/panoptic_deeplab_R101_os32_cityscapes.pth',
+                        type=str)
     parser.add_argument('--input-files',
                         help='input files, could be image, image list or video',
                         default='/mnt/LinuxDataFast/Datasets/NuScenes/v1.0-mini/samples',
@@ -72,7 +79,7 @@ def parse_args():
     update_config(config, args)
 
     config.defrost()
-    config.TEST.MODEL_FILE = 'zoo_models/panoptic_deeplab_R101_os32_cityscapes.pth'
+    config.TEST.MODEL_FILE = args.model_file
     config.freeze()
     return args
 
