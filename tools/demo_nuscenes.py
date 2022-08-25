@@ -84,19 +84,19 @@ def parse_args():
     return args
 
 
-def panoptic2img(panoptic):
+def pan2img(pan):
     # unique image encoding of a large iD int into RGB channels
-    img = np.zeros((panoptic.shape[0], panoptic.shape[1], 3), dtype=np.uint8)
-    img[:, :, 0] = panoptic % 256
-    img[:, :, 1] = (panoptic // 256) % 256
-    img[:, :, 2] = (panoptic // 256 // 256) % 256
+    img = np.zeros((pan.shape[0], pan.shape[1], 3), dtype=np.uint8)
+    img[:, :, 0] = pan % 256
+    img[:, :, 1] = (pan // 256) % 256
+    img[:, :, 2] = (pan // 256 // 256) % 256
     return img
 
-def img2panoptic(img):
+
+def img2pan(img):
     assert isinstance(img, np.ndarray) and len(img.shape) == 3 and img.shape[2] == 3
-    panoptic = np.zeros(img.shape[:2], dtype=np.int64)
-    panoptic = img[:, :, 0] + 256 * img[:, :, 1] + 256 * 256 * img[:, :, 2]
-    return panoptic
+    pan = img[:, :, 0] + 256 * img[:, :, 1] + 256 * 256 * img[:, :, 2]
+    return pan
 
 
 def read_image(file_name, format=None):
@@ -350,7 +350,7 @@ def main():
                 semantic_pred = semantic_pred[:raw_h, :raw_w]
                 panoptic_pred = panoptic_pred[:raw_h, :raw_w]
 
-                panoptic_out_img = panoptic2img(panoptic_pred)
+                panoptic_out_img = pan2img(panoptic_pred)
                 pil_image = Image.fromarray(panoptic_out_img.astype(dtype=np.uint8))
                 output_file = os.path.join(panoptic_out_dir, os.path.basename(fname)[:-4]+'.png')
                 with open(output_file, mode='wb') as f:
@@ -359,7 +359,7 @@ def main():
                 if args.debug:
                     # Debug the saved encoding
                     panoptic_load = np.asarray(Image.open(output_file))
-                    panoptic_load = img2panoptic(panoptic_load)
+                    panoptic_load = img2pan(panoptic_load)
                     save_panoptic_annotation(panoptic_load, panoptic_out_dir, os.path.basename(fname)[:-4]+'_debug',
                                              label_divisor=meta_dataset.label_divisor,
                                              colormap=meta_dataset.create_label_colormap(),
