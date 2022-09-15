@@ -54,7 +54,7 @@ def parse_args():
                         type=str)
     parser.add_argument('--output-dir',
                         help='output directory',
-                        default='/mnt/LinuxDataFast/Datasets/NuScenes/v1.0-mini/panoptic_pred',
+                        default='/mnt/LinuxDataFast/Datasets/NuScenes/v1.0-mini/pred_panoptic',
                         type=str)
     parser.add_argument('--camera-id',
                         help='the camera id from nuscenes',
@@ -269,8 +269,13 @@ def main():
     # PathManager.mkdirs(instance_out_dir)
     #
     # dir to save panoptic outputs
-    panoptic_out_dir = os.path.join(args.output_dir, 'panoptic')
+    # panoptic_out_dir = os.path.join(args.output_dir, 'panoptic')
+    panoptic_out_dir = args.output_dir
     PathManager.mkdirs(panoptic_out_dir)
+
+    if args.debug:
+        panoptic_vis_dir = os.path.join(panoptic_out_dir, 'vis')
+        PathManager.mkdirs(panoptic_vis_dir)
 
     # Test loop
     model.eval()
@@ -360,7 +365,7 @@ def main():
                     # Debug the saved encoding
                     panoptic_load = np.asarray(Image.open(output_file))
                     panoptic_load = img2pan(panoptic_load)
-                    save_panoptic_annotation(panoptic_load, panoptic_out_dir, os.path.basename(fname)[:-4]+'_debug',
+                    save_panoptic_annotation(panoptic_load, panoptic_vis_dir, os.path.basename(fname)[:-4],
                                              label_divisor=meta_dataset.label_divisor,
                                              colormap=meta_dataset.create_label_colormap(),
                                              image=raw_image if args.merge_image else None)
